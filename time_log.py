@@ -62,6 +62,22 @@ timelog = pd.concat([timelog,
 print(timelog)
 print('total: {}h {}m'.format(int(sum/60), int(sum%60)))
 
+int_date = today.year*10000 + today.month*100 + today.day
+if os.path.exists('기록.csv') == True: #기록 파일이 있다면
+    history = pd.read_csv('기록.csv')
+
+    if history.iloc[-1, 0] == int_date: #기록 파일에 이미 오늘 기록이 있다면
+        history = history.iloc[:-1, :]
+
+    df = pd.DataFrame(data={'date': int_date, 'total concentration time': sum}, index=[0])
+    pd.concat([history, df], axis=0, ignore_index=True)
+
+else:
+    history = pd.DataFrame(data={'date': int_date, 'total concentration time': sum}, index=[0])
+
+history.plot(x='date', y='total concentration time', kind = 'line')
+history.to_csv('기록.csv', mode='w', index=False, encoding='utf8')
+
 #파일로 저장
 timelog.to_csv(filedir, mode='w', index=False, encoding='utf8')
 
